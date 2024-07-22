@@ -64,4 +64,7 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     // Desenhando gráfico
     int xi = 0;
     int yi = height();
+
+
+
 }
