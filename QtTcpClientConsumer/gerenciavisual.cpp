@@ -60,4 +60,8 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     int minutos = dateTime.time().minute();
 
     qDebug() << "Hora do dia:" << hour << "h e " << minutos;
+
+    // Desenhando gráfico
+    int xi = 0;
+    int yi = height();
 }
