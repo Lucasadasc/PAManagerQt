@@ -7,11 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>427</height>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">this.rgb(255, 85, 127)</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QFrame" name="frame">
@@ -29,7 +35,7 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -164,17 +170,17 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QWidget" name="widget" native="true">
+   <widget class="GerenciaVisual" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>210</x>
       <y>70</y>
-      <width>321</width>
+      <width>311</width>
       <height>301</height>
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -185,7 +191,7 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="ipInput">
        <property name="minimumSize">
         <size>
          <width>20</width>
@@ -265,7 +271,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -349,6 +355,14 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GerenciaVisual</class>
+   <extends>QWidget</extends>
+   <header>gerenciavisual.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
