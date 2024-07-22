@@ -1,32 +1,133 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDateTime>
+#include <QListWidget>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
 {
-  ui->setupUi(this);
-  socket = new QTcpSocket(this);
-  tcpConnect();
+    ui->setupUi(this);
+    socket = new QTcpSocket(this);
 
-  connect(ui->pushButton,
-          SIGNAL(clicked(bool)),
-          this,
-          SLOT(getData()));
+    // Ação do botão de realizar conexão
+    connect(ui->btnRealizarConexao,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(tcpConnect()));
 
-  // Exemplo de uso de ipInput
-  qDebug() << "Texto atual em ipInput:" << ui->ipInput->text();
+    // Ação do botão de realizar desconexão
+    connect(ui->btnDesconectar,
+            SIGNAL(clicked(bool)),
+            this,
+            SLOT(tcpDesconnect()));
+
+    // Ação do botão de atualizar lista
+    connect(ui->btnAtualizarLista,
+            SIGNAL(clicked(bool)),
+            this,
+            SLOT(atualizarListaIPs()));
+
+    // Ação do ListWidget a cada interação
+    connect(ui->ipsList,
+            SIGNAL(activated(QModelIndex)),
+            this,
+            SLOT());
+
+    // Ação do botão de resgatar dados
+    connect(ui->btnResgatarDados,
+        SIGNAL(clicked(bool)),
+        this,
+        SLOT(getData()));
 }
 
 void MainWindow::tcpConnect(){
-  socket->connectToHost("127.0.0.1",1234);
-  if(socket->waitForConnected(3000)){
-    qDebug() << "Connected";
-  }
-  else{
-    qDebug() << "Disconnected";
-  }
+    ipInformado = ui->ipInput->text();
+    quint16 porta = 1234; // Porta do servido
+
+    qDebug() << ipInformado;
+    ui -> labelStatusConexao -> setText("Conectando...");
+    ui-> labelStatusConexao-> setStyleSheet("QLabel { color : orange; }");
+    QCoreApplication::processEvents(); // Forçando atualização
+
+    socket->connectToHost(ipInformado,porta);
+        if(socket->waitForConnected(3000)){
+            qDebug() << "Connected";
+
+            // Setando status das labels
+            ui -> labelStatusConexao -> setText("Servidor conectado!");
+            ui-> labelStatusConexao-> setStyleSheet("QLabel { color : green; }");
+
+            // Setando estado dos botões
+            ui->btnDesconectar->setEnabled(true);
+            ui->btnRealizarConexao->setEnabled(false);
+        }
+        else{
+            qDebug() << "Disconnected";
+
+            ui -> labelStatusConexao -> setText("Conexão não estabelecida!");
+            ui-> labelStatusConexao-> setStyleSheet("QLabel { color : red; }");
+        }
+
+        atualizarListaIPs();
+    }
+
+void MainWindow::tcpDesconnect(){
+    socket->disconnectFromHost();
+
+    if (socket->state() == QAbstractSocket::UnconnectedState || socket->waitForDisconnected(3000)){
+        qDebug() << "Disconnected";
+
+        // Setando estado dos botões
+        ui->btnDesconectar->setEnabled(false);
+        ui->btnAtualizarLista->setEnabled(false);
+        ui->btnResgatarDados->setEnabled(false);
+        ui->btnPararBusca->setEnabled(false);
+        ui->btnRealizarConexao->setEnabled(true);
+
+        // Setando as labels
+        ui -> labelStatusConexao -> setText("Desconectado!");
+        ui-> labelStatusConexao-> setStyleSheet("QLabel { color : red; }");
+
+        // Setando lista de IPs
+        ui-> ipsList ->clear();
+    }
+}
+
+
+void MainWindow::atualizarListaIPs(){
+    QString testando = "list " + ipInformado;
+
+    if (socket->state() == QAbstractSocket::ConnectedState) {
+
+        socket->write(testando.toStdString().c_str());
+        socket->waitForBytesWritten();
+        socket->waitForReadyRead();
+
+        qDebug() << socket->bytesAvailable();
+
+        while (socket->bytesAvailable()) {
+            QByteArray data = socket->readAll();
+            QStringList machineList = QString(data).split("\n");
+
+            QString mensagemLabel = QString("Lista de produtores (%1)").arg(machineList.size()-1);
+            ui -> labelQuantProdutores ->setText(mensagemLabel);
+
+            // Limpando QListWidget
+            ui -> ipsList -> clear();
+
+            QCoreApplication::processEvents();
+
+            foreach (const QString &machine, machineList) {
+                if (!machine.trimmed().isEmpty()) {
+                    ui->ipsList->addItem(machine);
+                }
+            }
+        }
+
+        // Deixando botão atualizar disponivel
+        ui -> btnAtualizarLista -> setEnabled(true);
+    }
 }
 
 void MainWindow::getData(){

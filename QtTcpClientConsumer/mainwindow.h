@@ -13,15 +13,16 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 private:
-
+  QString ipInformado;
 
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
-  
-  void tcpConnect();
 public slots:
-  void getData();
+    void getData();
+    void tcpConnect();
+    void tcpDesconnect();
+    void atualizarListaIPs();
 private:
   Ui::MainWindow *ui;
   QTcpSocket *socket;
