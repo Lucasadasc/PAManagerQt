@@ -1,0 +1,1 @@
+// Pegando ação de selecionar item de um QListWidget

@@ -60,7 +60,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="ipsList"/>
+         <widget class="QListWidget" name="ipsList">
+          <property name="cursor" stdset="0">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btnAtualizarLista">
@@ -106,7 +110,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QSlider" name="horizontalSlider">
+         <widget class="QSlider" name="sliderIntervalo">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -375,7 +379,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalSlider</sender>
+   <sender>sliderIntervalo</sender>
    <signal>valueChanged(int)</signal>
    <receiver>lcdNumber</receiver>
    <slot>display(int)</slot>

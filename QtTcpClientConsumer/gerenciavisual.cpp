@@ -4,6 +4,7 @@
 #include <QPen> // Caneta
 #include <cmath>
 #include <QMouseEvent>
+#include <QDateTime>
 
 GerenciaVisual::GerenciaVisual(QWidget *parent)
     : QWidget{parent}
@@ -45,5 +46,18 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     pen.setColor(QColor(0, 0, 255, 180)); // Mudando cor do lápis (o 4º elemento é a transparência)
     painter.setPen(pen);
 
+    // Pintando linha central
     painter.drawLine(0, height()/2, width(), height()/2);
+
+    // Valor em milissegundos desde a época Unix
+    qint64 ms_since_epoch = 1721681729861;
+
+    // Criar um QDateTime a partir dos milissegundos
+    QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(ms_since_epoch);
+
+    // Extrair a hora
+    int hour = dateTime.time().hour();
+    int minutos = dateTime.time().minute();
+
+    qDebug() << "Hora do dia:" << hour << "h e " << minutos;
 }

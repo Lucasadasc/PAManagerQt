@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QDateTime>
 #include <QListWidget>
+#include "gerenciavisual.h"
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -30,15 +31,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Ação do ListWidget a cada interação
     connect(ui->ipsList,
-            SIGNAL(activated(QModelIndex)),
+            SIGNAL(clicked(QModelIndex)),
             this,
-            SLOT());
+            SLOT(atualizarMaquinaSelecionada()));
 
     // Ação do botão de resgatar dados
     connect(ui->btnResgatarDados,
         SIGNAL(clicked(bool)),
         this,
-        SLOT(getData()));
+        SLOT(getData())
+    );
 }
 
 void MainWindow::tcpConnect(){
@@ -96,11 +98,11 @@ void MainWindow::tcpDesconnect(){
 
 
 void MainWindow::atualizarListaIPs(){
-    QString testando = "list " + ipInformado;
+    QString conexaoChar = "list " + ipInformado;
 
     if (socket->state() == QAbstractSocket::ConnectedState) {
 
-        socket->write(testando.toStdString().c_str());
+        socket->write(conexaoChar.toStdString().c_str());
         socket->waitForBytesWritten();
         socket->waitForReadyRead();
 
@@ -130,22 +132,31 @@ void MainWindow::atualizarListaIPs(){
     }
 }
 
+void MainWindow::atualizarMaquinaSelecionada(){
+    ui -> btnResgatarDados -> setEnabled(true);
+    ui -> sliderIntervalo -> setEnabled(true);
+}
+
 void MainWindow::getData(){
     QString str;
     QByteArray array;
     QStringList list;
     qint64 thetime;
 
-    //qDebug() << "Valor de ipInput: " << ui->ipInput->text();
+    // Recebendo valor selecionado do QListWidget
+    QListWidgetItem *selectedItem = ui->ipsList->currentItem();
+    maquinaSelecionada = selectedItem->text().replace("\r","");
 
     qDebug() << "to get data...";
 
     if(socket->state() == QAbstractSocket::ConnectedState){
-        qDebug() << "oii";
         if(socket->isOpen()){
             qDebug() << "reading...";
 
-            socket->write("get 127.0.0.1 5\r\n");
+            QString textoConexao = "get " + maquinaSelecionada + " 5\r\n";
+            qDebug() << textoConexao;
+
+            socket->write(textoConexao.toStdString().c_str());
             socket->waitForBytesWritten();
             socket->waitForReadyRead();
 
