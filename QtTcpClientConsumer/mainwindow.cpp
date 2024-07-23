@@ -189,7 +189,7 @@ void MainWindow::getData(){
         if(socket->isOpen()){
             qDebug() << "reading...";
 
-            QString textoConexao = "get " + maquinaSelecionada + " 5\r\n";
+            QString textoConexao = "get " + maquinaSelecionada + " 1\r\n";
             qDebug() << textoConexao;
 
             socket->write(textoConexao.toStdString().c_str());

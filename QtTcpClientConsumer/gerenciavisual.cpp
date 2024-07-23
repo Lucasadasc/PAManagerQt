@@ -32,9 +32,6 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     // Desenha um retângulo que ocupa 100% do tamanho do elemento
     painter.drawRect(0,0,width(), height()); // No Qt, os valores de (0,0) estão no canto superior esquerdo da tela
 
-    // Desenhando linha central
-    // painter.drawLine(0, height()/2, width(), height()/2);
-
     pen.setWidth(1); // Largura do traço
     painter.setPen(pen);
 
@@ -47,9 +44,6 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     // Mudando cor do lápis
     pen.setColor(QColor(0, 0, 255, 180)); // Mudando cor do lápis (o 4º elemento é a transparência)
     painter.setPen(pen);
-
-    // Pintando linha central
-    painter.drawLine(0, height()/2, width(), height()/2);
 
     // Desenhando gráfico
     int tamanhoVetor = temposRecebidos.size();
