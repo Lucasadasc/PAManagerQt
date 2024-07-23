@@ -6,9 +6,11 @@
 #include <QMouseEvent>
 #include <QDateTime>
 
-GerenciaVisual::GerenciaVisual(QWidget *parent)
-    : QWidget{parent}
-{}
+GerenciaVisual::GerenciaVisual(QWidget *parent): QWidget{parent}{
+    maiorTempo = 0;
+    menorTempo = 0;
+    maiorValor = 0;
+}
 
 void GerenciaVisual::paintEvent(QPaintEvent *event){
     QPainter painter(this); //Informando ao QPainter que ele deve pintar neste próprio objeto
@@ -49,22 +51,57 @@ void GerenciaVisual::paintEvent(QPaintEvent *event){
     // Pintando linha central
     painter.drawLine(0, height()/2, width(), height()/2);
 
-    // Valor em milissegundos desde a época Unix
-    qint64 ms_since_epoch = 1721681729861;
-
-    // Criar um QDateTime a partir dos milissegundos
-    QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(ms_since_epoch);
-
-    // Extrair a hora
-    int hour = dateTime.time().hour();
-    int minutos = dateTime.time().minute();
-
-    qDebug() << "Hora do dia:" << hour << "h e " << minutos;
-
     // Desenhando gráfico
-    int xi = 0;
-    int yi = height();
+    int tamanhoVetor = temposRecebidos.size();
+    int xa = 0;
+    int ya = width();
 
+    qint64 diferencaTempo = maiorTempo - menorTempo;
+    qDebug() << "aqui" << diferencaTempo;
+    if(diferencaTempo == 0){
+        diferencaTempo = 1;
+    }
 
+    for(int i=0; i<tamanhoVetor; i++){
+        int diferencaPonto = maiorTempo - temposRecebidos[i];
+        qDebug() << "aqui2" << diferencaPonto;
 
+        if(diferencaPonto == 0){
+            diferencaPonto = 1;
+        }
+
+        float x = width() - (width() * (diferencaPonto)/diferencaTempo);
+        float y = height() - (valoresRecebidos[i] * height() / maiorValor);
+
+        painter.drawLine(xa, ya, x, y);
+
+        qDebug() << x << y;
+
+        xa = x;
+        ya = y;
+    }
+
+}
+
+void GerenciaVisual::adicionarDados(qint64 tempo, int valor){
+    qDebug() << "Dados recebidos:" << tempo << valor;
+    // Adicione o código para processar e exibir os dados recebidos
+    maiorTempo = tempo;
+
+    if(menorTempo == 0 || menorTempo > tempo){
+        menorTempo = tempo;
+    }
+
+    if(maiorValor < valor){
+        maiorValor = valor;
+    }
+
+    temposRecebidos.append(tempo);
+    valoresRecebidos.append(valor);
+
+    qDebug() << maiorTempo;
+    qDebug() << maiorValor;
+    qDebug() << menorTempo;
+
+    repaint();
 }

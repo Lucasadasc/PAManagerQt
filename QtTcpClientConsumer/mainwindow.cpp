@@ -41,6 +41,24 @@ MainWindow::MainWindow(QWidget *parent) :
         this,
         SLOT(getData())
     );
+
+    // Conectando o sinal ao slot
+    connect(this,
+            &MainWindow::dadosRecebidos,
+            ui -> widget,
+            &GerenciaVisual::adicionarDados);
+
+    //Conexão slider de timer
+    connect(ui->sliderIntervalo,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(timerRequisicao()));
+
+    // Para timer de resgate de dados da requisição
+    connect(ui->btnPararBusca,
+            SIGNAL(clicked(bool)),
+            this,
+            SLOT(pararTimerRequisicao()));
 }
 
 void MainWindow::tcpConnect(){
@@ -137,9 +155,27 @@ void MainWindow::atualizarMaquinaSelecionada(){
     ui -> sliderIntervalo -> setEnabled(true);
 }
 
+void MainWindow::timerRequisicao(){
+    // Temporizador interno da classe - inicia um timer que é repetido a cada 100ms
+    int valueLCD = ui->lcdNumber->value() * 5000;
+    timerId = startTimer(valueLCD);
+
+    ui->btnPararBusca->setEnabled(true);
+}
+
+void MainWindow::pararTimerRequisicao(){
+    killTimer(timerId);
+
+    ui -> btnPararBusca ->setEnabled(false);
+}
+
+// A cada laõ do timer event, chamar getData()
+void MainWindow::timerEvent(QTimerEvent *event){
+    getData();
+}
+
 void MainWindow::getData(){
     QString str;
-    QByteArray array;
     QStringList list;
     qint64 thetime;
 
@@ -171,6 +207,11 @@ void MainWindow::getData(){
                     thetime = str.toLongLong(&ok);
                     str = list.at(1);
                     qDebug() << thetime << ": " << str;
+
+                    int valor = str.toInt();
+
+                    // Emitindo o sinal com os dados recebidos
+                    emit dadosRecebidos(thetime, valor);
                 }
             }
         }
@@ -183,3 +224,5 @@ MainWindow::~MainWindow()
   delete socket;
   delete ui;
 }
+
+

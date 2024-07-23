@@ -16,15 +16,22 @@ private:
     QString ipInformado;
     QString maquinaSelecionada;
 
+    int timerId;
+
 public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
+  void timerEvent(QTimerEvent *event); // É chamado cada vez que um timer criado na classe é realizado
 public slots:
     void getData();
     void tcpConnect();
     void tcpDesconnect();
     void atualizarListaIPs();
     void atualizarMaquinaSelecionada();
+    void timerRequisicao();
+    void pararTimerRequisicao();
+signals:
+    void dadosRecebidos(qint64 tempo, int valor); // Sinal que será emitido quando os dados forem recebidos
 private:
   Ui::MainWindow *ui;
   QTcpSocket *socket;
